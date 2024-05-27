@@ -1,4 +1,4 @@
-CC=gcc
+CC=g++
 CFLAGS=`pkg-config --cflags gtk4`
 LIBS=`pkg-config --libs gtk4`
 PA_LIBS=`echo "-lpulse-simple -lpulse"`
