@@ -1,4 +1,3 @@
-#include <gtk/gtk.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -60,7 +59,7 @@ void stream_state_cb(pa_stream *stream, void *userdata) {
 
       break;
     default:
-	    std::cout << "Stream state: " << state << std::endl;
+      std::cout << "Stream state: " << state << std::endl;
     }
 }
 
@@ -87,12 +86,11 @@ void pa_stream_read_cb(pa_stream *stream, const size_t /*nbytes*/, void* /*userd
     }
 
     // process data
-    std::cout << ">> " << actualbytes << " bytes\n";
     pcm_file.write((const char*)data, actualbytes);
     pcm_file.flush();
 
     if (pa_stream_drop(stream) != 0) {
-	    std::cerr << "Failed to drop data after peeking.\n";
+      std::cerr << "Failed to drop data after peeking.\n";
     }
 }
 
@@ -130,13 +128,13 @@ void context_state_callback(pa_context *ctx, void *userdata) {
     std::cout << "Context failed\n";
     break;
   default:
-	  std::cout << "Context state: " << state << std::endl;
+    std::cout << "Context state: " << state << std::endl;
   }
 }
 
-static void
-record_audio (GtkWidget *widget,
-             gpointer   data)
+int
+main (int    argc,
+      char **argv)
 {
   pcm_file.open("captured_audio.pcm", std::ios::binary);
 
@@ -146,43 +144,10 @@ record_audio (GtkWidget *widget,
   pa_context_set_state_callback(ctx, &context_state_callback, nullptr);
   if (pa_context_connect(ctx, nullptr, PA_CONTEXT_NOFLAGS, nullptr) < 0) {
     std::cerr << "PA connection failed.\n";
-    return;
+    return 1;
   }
 
   pa_mainloop_run(loop, nullptr);
 
+  return 0;
 }
-
-static void
-activate (GtkApplication *app,
-          gpointer        user_data)
-{
-  GtkWidget *window;
-  GtkWidget *button;
-
-  window = gtk_application_window_new (app);
-  gtk_window_set_title (GTK_WINDOW (window), "Hello");
-  gtk_window_set_default_size (GTK_WINDOW (window), 400, 400);
-
-  button = gtk_button_new_with_label ("Hello World");
-  g_signal_connect (button, "clicked", G_CALLBACK (record_audio), NULL);
-  gtk_window_set_child (GTK_WINDOW (window), button);
-
-  gtk_window_present (GTK_WINDOW (window));
-}
-
-int
-main (int    argc,
-      char **argv)
-{
-  GtkApplication *app;
-  int status;
-
-  app = gtk_application_new ("org.gtk.example", G_APPLICATION_FLAGS_NONE);
-  g_signal_connect (app, "activate", G_CALLBACK (activate), NULL);
-  status = g_application_run (G_APPLICATION (app), argc, argv);
-  g_object_unref (app);
-
-  return status;
-}
-
