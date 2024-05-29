@@ -7,6 +7,8 @@
 #include <string>
 #include <fstream>
 #include <iostream>
+#include <boost/beast/core.hpp>
+#include <boost/beast/websocket.hpp>
 
 #include <pulse/pulseaudio.h>
 
@@ -70,19 +72,19 @@ void pa_stream_read_cb(pa_stream *stream, const size_t /*nbytes*/, void* /*userd
     int16_t *data = nullptr;
     size_t actualbytes = 0;
     if (pa_stream_peek(stream, (const void**)&data, &actualbytes) != 0) {
-	std::cerr << "Failed to peek at stream data\n";
-	return;
+        std::cerr << "Failed to peek at stream data\n";
+        return;
     }
 
     if (data == nullptr && actualbytes == 0) {
-	// No data in the buffer, ignore.
-	return;
+      // No data in the buffer, ignore.
+      return;
     } else if (data == nullptr && actualbytes > 0) {
-	// Hole in the buffer. We must drop it.
-	if (pa_stream_drop(stream) != 0) {
-	    std::cerr << "Failed to drop a hole! (Sounds weird, doesn't it?)\n";
-	    return;
-	}
+        // Hole in the buffer. We must drop it.
+        if (pa_stream_drop(stream) != 0) {
+            std::cerr << "Failed to drop a hole! (Sounds weird, doesn't it?)\n";
+            return;
+        }
     }
 
     // process data
