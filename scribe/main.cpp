@@ -120,36 +120,36 @@ void server_info_cb(pa_context *ctx, const pa_server_info *info, void *userdata)
 }
 
 void context_state_callback(pa_context *ctx, void *userdata) {
-  const pa_context_state state = pa_context_get_state(ctx);
-  switch (state) {
-  case PA_CONTEXT_READY:
-	  std::cout << "Context ready\n";
-	  pa_context_get_server_info(ctx, &server_info_cb, nullptr /*userdata*/);
-	  break;
-  case PA_CONTEXT_FAILED:
-    std::cout << "Context failed\n";
-    break;
-  default:
-    std::cout << "Context state: " << state << std::endl;
-  }
+    const pa_context_state state = pa_context_get_state(ctx);
+    switch (state) {
+    case PA_CONTEXT_READY:
+      std::cout << "Context ready\n";
+      pa_context_get_server_info(ctx, &server_info_cb, nullptr /*userdata*/);
+      break;
+    case PA_CONTEXT_FAILED:
+      std::cout << "Context failed\n";
+      break;
+    default:
+      std::cout << "Context state: " << state << std::endl;
+    }
 }
 
 int
 main (int    argc,
       char **argv)
 {
-  pcm_file.open("captured_audio.pcm", std::ios::binary);
+    pcm_file.open("captured_audio.pcm", std::ios::binary);
 
-  pa_mainloop *loop = pa_mainloop_new();
-  pa_mainloop_api *loop_api = pa_mainloop_get_api(loop);
-  pa_context *ctx = pa_context_new(loop_api, "tongues");
-  pa_context_set_state_callback(ctx, &context_state_callback, nullptr);
-  if (pa_context_connect(ctx, nullptr, PA_CONTEXT_NOFLAGS, nullptr) < 0) {
-    std::cerr << "PA connection failed.\n";
-    return 1;
-  }
+    pa_mainloop *loop = pa_mainloop_new();
+    pa_mainloop_api *loop_api = pa_mainloop_get_api(loop);
+    pa_context *ctx = pa_context_new(loop_api, "tongues");
+    pa_context_set_state_callback(ctx, &context_state_callback, nullptr);
+    if (pa_context_connect(ctx, nullptr, PA_CONTEXT_NOFLAGS, nullptr) < 0) {
+      std::cerr << "PA connection failed.\n";
+      return 1;
+    }
 
-  pa_mainloop_run(loop, nullptr);
+    pa_mainloop_run(loop, nullptr);
 
-  return 0;
+    return 0;
 }
