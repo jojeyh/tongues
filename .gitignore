@@ -132,3 +132,4 @@ dist
 # scribe binary
 scribe
 output.pcm
+output.wav
