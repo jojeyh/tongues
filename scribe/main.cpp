@@ -7,18 +7,19 @@
 #include <arpa/inet.h>
 #include <signal.h>
 
+#include <iostream>
 #include <string>
 
 // TODO should probably remove these from global context
 static pa_mainloop *mainloop = NULL;
 static pa_context *context = NULL;
 static pa_stream *stream = NULL;
-// static FILE *output_file = NULL;
 static int sockfd;
 
 void handle_interrupt(int signal) {
     if (signal == SIGINT) {
         if (mainloop) {
+            std::cout << "SIGINT detected" << std::endl;
             pa_mainloop_quit(mainloop, 0);
         } else {
             exit(0);
@@ -56,7 +57,6 @@ void stream_read_callback(pa_stream *s, size_t length, void *userdata) {
     if (s) {
         write(sockfd, data, length);
     }
-    // fwrite(data, 1, length, output_file);
     // char buf[1024];
     // read(sockfd, buf, sizeof(buf));
     // printf("%s\n", buf);
@@ -134,12 +134,6 @@ int main(int argc, char *argv[]) {
         fprintf(stderr, "pa_context_connect() failed: %s\n", pa_strerror(pa_context_errno(context)));
         return 1;
     }
-
-    // output_file = fopen("output.pcm", "wb");
-    // if (!output_file) {
-    //     fprintf(stderr, "Failed to open output file\n");
-    //     return 1;
-    // }
 
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (sockfd < 0) {
