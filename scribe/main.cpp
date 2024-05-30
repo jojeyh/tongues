@@ -17,13 +17,18 @@ static pa_stream *stream = NULL;
 static int sockfd;
 
 void handle_interrupt(int signal) {
-    if (signal == SIGINT) {
-        if (mainloop) {
-            std::cout << "SIGINT detected" << std::endl;
-            pa_mainloop_quit(mainloop, 0);
-        } else {
-            exit(0);
-        }
+    switch (signal) {
+        case SIGINT: 
+        case SIGKILL:
+            if (sockfd) {
+                close(sockfd); 
+            }
+            if (mainloop) {
+                pa_mainloop_quit(mainloop, 0);
+            }
+            break;
+        default:
+            break;
     }
 }
 
@@ -57,9 +62,14 @@ void stream_read_callback(pa_stream *s, size_t length, void *userdata) {
     if (s) {
         write(sockfd, data, length);
     }
-    // char buf[1024];
-    // read(sockfd, buf, sizeof(buf));
-    // printf("%s\n", buf);
+    char buf[1024];
+    int bytes_read = read(sockfd, buf, sizeof(buf));
+    if (bytes_read > 0) {
+        for (int i=0; i<bytes_read; i++) {
+            std::cout << buf[i];
+        }
+        std::cout << std::endl;
+    }
 
     pa_stream_drop(s);
 }
@@ -135,12 +145,13 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    sockfd = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
     if (sockfd < 0) {
-        perror("socket");
+        perror("Socket creation failed.");
         return 1;
     }
 
+    // TODO maybe wait to run this till context and stream is ready ?
     // Server address configuration
     struct sockaddr_in s_addr;
     s_addr.sin_family = AF_INET;             // IPv4
@@ -157,8 +168,12 @@ int main(int argc, char *argv[]) {
          = connect(sockfd, (struct sockaddr*)&s_addr,
                    sizeof(s_addr)))
         < 0) {
-        printf("\nConnection Failed \n");
-        return -1;
+        if (errno == EINPROGRESS) {
+            std::cout << "Connection is in progress." << std::endl;
+        } else {
+            printf("\nConnection Failed \n");
+            return -1;
+        }
     }
 
     signal(SIGINT, handle_interrupt);
