@@ -46,8 +46,9 @@ void server_info_callback(pa_context *c, const pa_server_info *info, void *userd
     printf("Default sink name: %s\n", info->default_sink_name);
 
     pa_sample_spec ss;
-    ss.format = PA_SAMPLE_S16LE;
-    ss.rate = 48000;
+    ss.format = PA_SAMPLE_FLOAT32LE;
+    // TODO check for available freqs and if possible assign to 16000
+    ss.rate = 16000;
     ss.channels = 2;
 
     stream = pa_stream_new(c, "Record", &ss, NULL);
