@@ -39,9 +39,15 @@ app.whenReady().then(() => {
       console.error("Transcriber process err: ", err);
     });
 
+    /*
+      Message from socket is object with properties:
+      { type: Buffer, data: ... }
+    */
     scribe.stdout.on('data', (data) => {
-      console.log(`stdout: ${data}`);
-      event.reply('process-output', data.toString());
+      let data_string = data.toString();
+      if (data_string.slice(0, 3) === "seg") {
+        event.reply('process-output', data_string);
+      }
     })
 
     scribe.stderr.on('data', (data) => {
