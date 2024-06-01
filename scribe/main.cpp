@@ -10,6 +10,8 @@
 #include <iostream>
 #include <string>
 
+#define WS_URL "54.144.228.91"
+
 // TODO should probably remove these from global context
 static pa_mainloop *mainloop = NULL;
 static pa_context *context = NULL;
@@ -156,7 +158,7 @@ int main(int argc, char *argv[]) {
     struct sockaddr_in s_addr;
     s_addr.sin_family = AF_INET;             // IPv4
     s_addr.sin_port = htons(43007); 
-    if (inet_pton(AF_INET, "127.0.0.1", &s_addr.sin_addr)
+    if (inet_pton(AF_INET, WS_URL, &s_addr.sin_addr)
         <= 0) {
         printf(
             "\nInvalid address/ Address not supported \n");
