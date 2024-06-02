@@ -2,10 +2,15 @@ import { useState } from 'react';
 import './App.css';
 import axios from 'axios';
 
+interface TranslationResponse {
+    translatedText: string;
+}
+
 const TRANSLATION_URL = 'http://localhost:8000/translate';
 
 const App = () => {
-    const [words, setWords] = useState<string[]>([])
+    const [words, setWords] = useState<string[]>([]);
+    const [translation, setTranslation] = useState<string>("");
     const [isTranscribing, setIsTranscribing] = useState<boolean>(false);
 
     const output = document.getElementById('output');
@@ -34,14 +39,17 @@ const App = () => {
         }
     }
      
-    const translateWord = (word: string) => {
-        axios.post(TRANSLATION_URL, {
-            text: word,   
-            src_lang: "es",
-            targ_lang: "en",
-        })
-        .then(response => console.log(response))
-        .catch(err => console.error("Error fetching translation: ", err));
+    const translateWord = async (word: string) => {
+        try {
+            const { data } = await axios.post<TranslationResponse>(TRANSLATION_URL, {
+                text: word,   
+                src_lang: "es",
+                targ_lang: "en",
+            });
+            setTranslation(data['translatedText']);
+        } catch (err) {
+            console.error("Error fetching translation: ", err);
+        }
     }
 
     return (
@@ -68,7 +76,7 @@ const App = () => {
             <div className='right'>
                 <div className='translation'>
                     <div className='word'>
-                        translations go here
+                        {translation}
                     </div>
                 </div>
             </div>
