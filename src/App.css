@@ -42,3 +42,11 @@
     justify-content: center;
     gap: 100px;
 }
+
+.word {
+    cursor: pointer;
+}
+
+.word:hover {
+    color: aqua;
+}

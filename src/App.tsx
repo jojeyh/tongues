@@ -1,8 +1,12 @@
 import { useState } from 'react';
 import './App.css';
+import axios from 'axios';
+
+const TRANSLATION_URL = 'http://localhost:8000/translate';
 
 const App = () => {
     const [words, setWords] = useState<string[]>([])
+    const [isTranscribing, setIsTranscribing] = useState<boolean>(false);
 
     const output = document.getElementById('output');
     window.scribeApi.onProcessOutput((e: any, message: string) => { 
@@ -17,11 +21,27 @@ const App = () => {
     }
 
     const startTranscribe = (e: any) => {
-        window.scribeApi.startTranscribe();
+        if (!isTranscribing) {
+            setIsTranscribing(true);
+            window.scribeApi.startTranscribe();
+        }
     }
 
     const stopTranscription = (e: any) => {
-        window.scribeApi.stopTranscribe();
+        if (isTranscribing) {
+            setIsTranscribing(false);
+            window.scribeApi.stopTranscribe();
+        }
+    }
+     
+    const translateWord = (word: string) => {
+        axios.post(TRANSLATION_URL, {
+            text: word,   
+            src_lang: "es",
+            targ_lang: "en",
+        })
+        .then(response => console.log(response))
+        .catch(err => console.error("Error fetching translation: ", err));
     }
 
     return (
@@ -32,17 +52,24 @@ const App = () => {
                 }}>tongues</div>
             </div>
             <div className='controls'>
-                <button onClick={startTranscribe}>Transcribe</button>
-                <button onClick={stopTranscription}>Stop</button>
+                { isTranscribing ? 
+                    <button onClick={stopTranscription}>Stop</button> :
+                    <button onClick={startTranscribe}>Transcribe</button>
+                }
             </div>
             <div className='left'>
                 {words.map(word => (
-                    <div onClick={() => console.log(word)}>{word}</div>
+                    <div 
+                        className='word'
+                        onClick={(e: any) => translateWord(word)}
+                    >{word}</div>
                 ))}
             </div>
             <div className='right'>
                 <div className='translation'>
-                    translations go here
+                    <div className='word'>
+                        translations go here
+                    </div>
                 </div>
             </div>
         </div>
