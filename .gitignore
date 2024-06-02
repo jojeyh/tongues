@@ -90,3 +90,6 @@ typings/
 
 # Electron-Forge
 out/
+
+# transcription binary
+scribe/scribe
