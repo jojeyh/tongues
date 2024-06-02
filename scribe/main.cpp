@@ -10,7 +10,7 @@
 #include <iostream>
 #include <string>
 
-#define WS_URL "54.144.228.91"
+#define WS_URL "54.221.174.188"
 
 // TODO should probably remove these from global context
 static pa_mainloop *mainloop = NULL;

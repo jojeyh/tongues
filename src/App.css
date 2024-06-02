@@ -1,0 +1,44 @@
+.container {
+    display: grid;
+    grid-template-rows: 50px 50px 1fr;
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+        "header header"
+        "controls controls"
+        "left right";
+    padding: 5px;
+    box-sizing: border-box;
+    width: 100vw;
+    height: 100vh;
+}
+
+.header {
+    grid-area: header;
+    text-align: center;
+}
+
+.left {
+    font-size: 25px;
+    display: flex;
+    align-content: flex-start;
+    gap: 5px;
+    flex-wrap: wrap;
+    padding: 5px;
+    box-sizing: border-box;
+    grid-area: left;
+    border-right: 1px solid black;
+}
+
+.right {
+    padding: 5px;
+    box-sizing: border-box;
+    grid-area: right;
+}
+
+.controls {
+    grid-area: controls;
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    gap: 100px;
+}
