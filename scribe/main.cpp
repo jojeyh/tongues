@@ -9,8 +9,7 @@
 
 #include <iostream>
 #include <string>
-
-#define WS_URL "54.221.174.188"
+#include <cstdlib>
 
 // TODO should probably remove these from global context
 static pa_mainloop *mainloop = NULL;
@@ -138,6 +137,12 @@ void context_state_callback(pa_context *c, void *userdata) {
 }
 
 int main(int argc, char *argv[]) {
+    const char *ws_url = std::getenv("TONGUES_WS_URL");
+
+    if (ws_url == nullptr) {
+        return 1;
+    }
+
     mainloop = pa_mainloop_new();
     context = pa_context_new(pa_mainloop_get_api(mainloop), "Tongues");
 
@@ -158,7 +163,7 @@ int main(int argc, char *argv[]) {
     struct sockaddr_in s_addr;
     s_addr.sin_family = AF_INET;             // IPv4
     s_addr.sin_port = htons(43007); 
-    if (inet_pton(AF_INET, WS_URL, &s_addr.sin_addr)
+    if (inet_pton(AF_INET, ws_url, &s_addr.sin_addr)
         <= 0) {
         printf(
             "\nInvalid address/ Address not supported \n");
