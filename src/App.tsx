@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import './App.css';
 import axios from 'axios';
+import { Button } from '@mui/material';
 
 interface TranslationResponse {
     translatedText: string;
@@ -12,6 +13,8 @@ const App = () => {
     const [words, setWords] = useState<string[]>([]);
     const [translation, setTranslation] = useState<string>("");
     const [isTranscribing, setIsTranscribing] = useState<boolean>(false);
+    const [longPressWords, setLongPressWords] = useState<string>("");
+    const [longPressActive, setLongPressActive] = useState<boolean>(false);
 
     const output = document.getElementById('output');
     window.scribeApi.onProcessOutput((e: any, message: string) => { 
@@ -19,14 +22,16 @@ const App = () => {
     })
 
     const addWords = (wordsToAdd: string[]) => {
+        const removedBlanks = wordsToAdd.filter(word => word !== "");
         setWords([
             ...words,
-            ...wordsToAdd,
+            ...removedBlanks,
         ]);
     }
 
     const startTranscribe = (e: any) => {
         if (!isTranscribing) {
+            setWords([]);
             setIsTranscribing(true);
             window.scribeApi.startTranscribe();
         }
@@ -42,7 +47,7 @@ const App = () => {
     const translateWord = async (word: string) => {
         try {
             const { data } = await axios.post<TranslationResponse>(TRANSLATION_URL, {
-                text: word,   
+                text: word,
                 src_lang: "es",
                 targ_lang: "en",
             });
@@ -50,6 +55,10 @@ const App = () => {
         } catch (err) {
             console.error("Error fetching translation: ", err);
         }
+    }
+
+    const beginLongTranslation = (e: any) => {
+
     }
 
     return (
@@ -61,8 +70,8 @@ const App = () => {
             </div>
             <div className='controls'>
                 { isTranscribing ? 
-                    <button onClick={stopTranscription}>Stop</button> :
-                    <button onClick={startTranscribe}>Transcribe</button>
+                    <Button onClick={stopTranscription}>Stop</Button> :
+                    <Button onClick={startTranscribe}>Transcribe</Button>
                 }
             </div>
             <div className='left'>
