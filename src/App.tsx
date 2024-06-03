@@ -9,10 +9,9 @@ interface TranslationResponse {
 }
 
 const TRANSLATION_URL = 'http://localhost:8000/translate';
-const TEST_ARR = ['Hola', 'como', 'estas?'];
 
 const App = () => {
-    const [words, setWords] = useState<string[]>(TEST_ARR);
+    const [words, setWords] = useState<string[]>([]);
     const [translation, setTranslation] = useState<string>("");
     const [isTranscribing, setIsTranscribing] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -26,7 +25,7 @@ const App = () => {
     const handleKeyDown = (event: any) => {
         if (event.ctrlKey && event.key === 'z') {
             event.preventDefault();  // Prevent the default behavior of Ctrl+Z in most browsers
-            translateText(selectedTextRef.current);
+            translateSelected(event);
         }
     };
 
@@ -84,6 +83,13 @@ const App = () => {
         setIsLoading(false);
     }
 
+    const translateSelected = (e: any) => {
+        e.preventDefault();
+        if (selectedTextRef.current.length) {
+            translateText(selectedTextRef.current);
+        }
+    }
+
     return (
         <div className='container'>
             <div className='controls'>
@@ -101,15 +107,23 @@ const App = () => {
                 ))}
             </div>
             <div className='center'>
-                <IconButton onClick={() => translateText(selectedTextRef.current)}>
+                <IconButton onClick={translateSelected}>
                     <ArrowCircleRightIcon fontSize='large' />
                 </IconButton>
             </div>
             <div className='right'>
                 <div className='translation'>
-                    <div className='word'>
-                        {isLoading ? <CircularProgress /> : translation}
-                    </div>
+                    { isLoading ? 
+                        <CircularProgress size='large' /> :
+                        <div className='translation'>
+                            <div style={{paddingBottom: '20px'}}>
+                                {selectedTextRef.current}
+                            </div>
+                            <div>
+                                {translation}
+                            </div>
+                        </div>
+                    }
                 </div>
             </div>
         </div>

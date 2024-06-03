@@ -20,7 +20,7 @@
     align-content: flex-start;
     gap: 5px;
     flex-wrap: wrap;
-    padding: 10px;
+    padding: 20px;
     box-sizing: border-box;
     grid-area: left;
     border: 1px solid black;
@@ -30,7 +30,7 @@
 }
 
 .right {
-    padding: 5px;
+    padding: 20px;
     box-sizing: border-box;
     grid-area: right;
     border: 1px solid black;
@@ -47,6 +47,10 @@
     display: flex;
     flex: 1;
     justify-content: center;
+}
+
+.translation {
+    font-size: 40px;
 }
 
 .word {
