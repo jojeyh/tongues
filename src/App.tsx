@@ -8,10 +8,9 @@ interface TranslationResponse {
 }
 
 const TRANSLATION_URL = 'http://localhost:8000/translate';
-const TEST_ARRAY = ['Hola', 'como', 'estas?']
 
 const App = () => {
-    const [words, setWords] = useState<string[]>(TEST_ARRAY);
+    const [words, setWords] = useState<string[]>([]);
     const [translation, setTranslation] = useState<string>("");
     const [isTranscribing, setIsTranscribing] = useState<boolean>(false);
     const selectedTextRef = useRef<string>("");
