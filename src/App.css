@@ -1,15 +1,13 @@
 .container {
     display: grid;
-    grid-template-rows: 50px 50px 1fr;
+    grid-template-rows: 50px 1fr;
     grid-template-columns: 1fr 1fr;
     grid-template-areas:
-        "header header"
         "controls controls"
         "left right";
     padding: 5px;
     box-sizing: border-box;
-    width: 100vw;
-    height: 100vh;
+    height: 
 }
 
 .header {
@@ -40,7 +38,6 @@
     display: flex;
     flex: 1;
     justify-content: center;
-    gap: 100px;
 }
 
 .word {

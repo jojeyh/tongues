@@ -63,11 +63,6 @@ const App = () => {
 
     return (
         <div className='container'>
-            <div className='header'>
-                <div style={{
-                    fontSize: 30,
-                }}>tongues</div>
-            </div>
             <div className='controls'>
                 { isTranscribing ? 
                     <Button onClick={stopTranscription}>Stop</Button> :
