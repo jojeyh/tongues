@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import './App.css';
 import axios from 'axios';
 import { Button } from '@mui/material';
@@ -8,18 +8,41 @@ interface TranslationResponse {
 }
 
 const TRANSLATION_URL = 'http://localhost:8000/translate';
+const TEST_ARRAY = ['Hola', 'como', 'estas?']
 
 const App = () => {
-    const [words, setWords] = useState<string[]>([]);
+    const [words, setWords] = useState<string[]>(TEST_ARRAY);
     const [translation, setTranslation] = useState<string>("");
     const [isTranscribing, setIsTranscribing] = useState<boolean>(false);
-    const [longPressWords, setLongPressWords] = useState<string>("");
-    const [longPressActive, setLongPressActive] = useState<boolean>(false);
+    const selectedTextRef = useRef<string>("");
 
     const output = document.getElementById('output');
     window.scribeApi.onProcessOutput((e: any, message: string) => { 
         addWords(message.split(' '));
     })
+
+    const handleKeyDown = (event: any) => {
+        if (event.ctrlKey && event.key === 'z') {
+            event.preventDefault();  // Prevent the default behavior of Ctrl+Z in most browsers
+            translateText(selectedTextRef.current);
+        }
+    };
+
+    const handleSelectionChange = () => {
+        const selection = window.getSelection();
+        const text = selection.toString();
+        selectedTextRef.current = text;
+    }
+
+    useEffect(() => {
+        document.addEventListener('mouseup', handleSelectionChange);
+        window.addEventListener('keydown', handleKeyDown);
+
+        return () => {
+            document.removeEventListener('keyup', handleSelectionChange);
+            window.removeEventListener('keydown', handleKeyDown);
+        }
+    }, []);
 
     const addWords = (wordsToAdd: string[]) => {
         const removedBlanks = wordsToAdd.filter(word => word !== "");
@@ -44,10 +67,11 @@ const App = () => {
         }
     }
      
-    const translateWord = async (word: string) => {
+    const translateText = async (text: string) => {
+        // TODO add spinner
         try {
             const { data } = await axios.post<TranslationResponse>(TRANSLATION_URL, {
-                text: word,
+                text: text,
                 src_lang: "es",
                 targ_lang: "en",
             });
@@ -55,10 +79,6 @@ const App = () => {
         } catch (err) {
             console.error("Error fetching translation: ", err);
         }
-    }
-
-    const beginLongTranslation = (e: any) => {
-
     }
 
     return (
@@ -70,10 +90,10 @@ const App = () => {
                 }
             </div>
             <div className='left'>
-                {words.map(word => (
+                {words.map((word, index) => (
                     <div 
+                        key={index}
                         className='word'
-                        onClick={(e: any) => translateWord(word)}
                     >{word}</div>
                 ))}
             </div>
