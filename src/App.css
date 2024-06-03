@@ -1,13 +1,12 @@
 .container {
     display: grid;
     grid-template-rows: 50px 1fr;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1.2fr 60px 1fr;
     grid-template-areas:
-        "controls controls"
-        "left right";
+        "controls controls controls"
+        "left center right";
     padding: 5px;
     box-sizing: border-box;
-    height: 
 }
 
 .header {
@@ -21,16 +20,26 @@
     align-content: flex-start;
     gap: 5px;
     flex-wrap: wrap;
-    padding: 5px;
+    padding: 10px;
     box-sizing: border-box;
     grid-area: left;
-    border-right: 1px solid black;
+    border: 1px solid black;
+    border-radius: 10px;
+    margin-right: 10px;
+    height: calc(100vh - 80px);
 }
 
 .right {
     padding: 5px;
     box-sizing: border-box;
     grid-area: right;
+    border: 1px solid black;
+    border-radius: 10px;
+}
+
+.center {
+    grid-area: center;
+    align-self: center;
 }
 
 .controls {

@@ -1,18 +1,21 @@
 import { useEffect, useRef, useState } from 'react';
 import './App.css';
 import axios from 'axios';
-import { Button } from '@mui/material';
+import { Button, CircularProgress, IconButton } from '@mui/material';
+import ArrowCircleRightIcon from '@mui/icons-material/ArrowCircleRight';
 
 interface TranslationResponse {
     translatedText: string;
 }
 
 const TRANSLATION_URL = 'http://localhost:8000/translate';
+const TEST_ARR = ['Hola', 'como', 'estas?'];
 
 const App = () => {
-    const [words, setWords] = useState<string[]>([]);
+    const [words, setWords] = useState<string[]>(TEST_ARR);
     const [translation, setTranslation] = useState<string>("");
     const [isTranscribing, setIsTranscribing] = useState<boolean>(false);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const selectedTextRef = useRef<string>("");
 
     const output = document.getElementById('output');
@@ -67,7 +70,7 @@ const App = () => {
     }
      
     const translateText = async (text: string) => {
-        // TODO add spinner
+        setIsLoading(true);
         try {
             const { data } = await axios.post<TranslationResponse>(TRANSLATION_URL, {
                 text: text,
@@ -78,6 +81,7 @@ const App = () => {
         } catch (err) {
             console.error("Error fetching translation: ", err);
         }
+        setIsLoading(false);
     }
 
     return (
@@ -96,10 +100,15 @@ const App = () => {
                     >{word}</div>
                 ))}
             </div>
+            <div className='center'>
+                <IconButton onClick={() => translateText(selectedTextRef.current)}>
+                    <ArrowCircleRightIcon fontSize='large' />
+                </IconButton>
+            </div>
             <div className='right'>
                 <div className='translation'>
                     <div className='word'>
-                        {translation}
+                        {isLoading ? <CircularProgress /> : translation}
                     </div>
                 </div>
             </div>
