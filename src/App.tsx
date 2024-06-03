@@ -73,7 +73,7 @@ const App = () => {
         try {
             const { data } = await axios.post<TranslationResponse>(TRANSLATION_URL, {
                 text: text,
-                src_lang: "es",
+                src_lang: "fr",
                 targ_lang: "en",
             });
             setTranslation(data['translatedText']);
@@ -103,6 +103,7 @@ const App = () => {
                     <div 
                         key={index}
                         className='word'
+                        onClick={() => translateText(word)}
                     >{word}</div>
                 ))}
             </div>
