@@ -46,7 +46,9 @@
     grid-area: controls;
     display: flex;
     flex: 1;
+    gap: 10px;
     justify-content: center;
+    align-items: center;
 }
 
 .translation {

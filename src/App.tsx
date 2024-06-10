@@ -113,10 +113,12 @@ const App = () => {
             <div className='controls'>
                 <Dropdown language={sourceLang} changeLanguage={setSourceLang} />
                 <Dropdown language={targetLang} changeLanguage={setTargetLang} />
-                { isTranscribing ? 
-                    <Button onClick={stopTranscription}>Stop</Button> :
-                    <Button onClick={startTranscribe}>Transcribe</Button>
-                }
+                <div style={{marginLeft: 'auto'}}>
+                    { isTranscribing ? 
+                        <Button onClick={stopTranscription}>Stop</Button> :
+                        <Button onClick={startTranscribe}>Transcribe</Button>
+                    }
+                </div>
             </div>
             <div className='left'>
                 {words.map((word, index) => (
