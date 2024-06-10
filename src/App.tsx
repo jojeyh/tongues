@@ -111,8 +111,8 @@ const App = () => {
     return (
         <div className='container'>
             <div className='controls'>
-                <Dropdown language={sourceLang} changeLanguage={setSourceLang} />
-                <Dropdown language={targetLang} changeLanguage={setTargetLang} />
+                <Dropdown language={sourceLang} setLanguage={setSourceLang} />
+                <Dropdown language={targetLang} setLanguage={setTargetLang} />
                 <div style={{marginLeft: 'auto'}}>
                     { isTranscribing ? 
                         <Button onClick={stopTranscription}>Stop</Button> :
