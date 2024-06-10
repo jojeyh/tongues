@@ -3,24 +3,37 @@ import './App.css';
 import axios from 'axios';
 import { Button, CircularProgress, IconButton } from '@mui/material';
 import ArrowCircleRightIcon from '@mui/icons-material/ArrowCircleRight';
+import { listen } from '@tauri-apps/api/event';
+import { invoke } from '@tauri-apps/api/tauri';
+import Dropdown from './Dropdown';
 
 interface TranslationResponse {
-    translatedText: string;
+    translation: string;
 }
 
-const TRANSLATION_URL = 'http://localhost:8000/translate';
+const TRANSLATION_URL = 'https://api.tongues.media/translate';
 
 const App = () => {
+    const [sourceLang, setSourceLang] = useState<string>("Spanish");
+    const [targetLang, setTargetLang] = useState<string>("English");
     const [words, setWords] = useState<string[]>([]);
     const [translation, setTranslation] = useState<string>("");
     const [isTranscribing, setIsTranscribing] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const selectedTextRef = useRef<string>("");
+    const selectedTextRef = useRef<string | null>(null);
 
-    const output = document.getElementById('output');
-    window.scribeApi.onProcessOutput((e: any, message: string) => { 
-        addWords(message.split(' '));
-    })
+    useEffect(() => {
+        const unlisten = listen('transcription', (event: any) => {
+            if (event.payload) {
+                const newWords = event.payload.split(' ');
+                addWords(newWords);
+            }
+        });
+
+        return () => {
+            unlisten.then((f) => f());
+        };
+    }, []);
 
     const handleKeyDown = (event: any) => {
         if (event.ctrlKey && event.key === 'z') {
@@ -30,9 +43,11 @@ const App = () => {
     };
 
     const handleSelectionChange = () => {
-        const selection = window.getSelection();
-        const text = selection.toString();
-        selectedTextRef.current = text;
+        const selection  = window.getSelection();
+        const text = selection?.toString();
+        if (text) {
+            selectedTextRef.current = text;
+        }
     }
 
     useEffect(() => {
@@ -47,52 +62,57 @@ const App = () => {
 
     const addWords = (wordsToAdd: string[]) => {
         const removedBlanks = wordsToAdd.filter(word => word !== "");
-        setWords([
-            ...words,
+        setWords(prevWords => [
+            ...prevWords,
             ...removedBlanks,
         ]);
     }
 
     const startTranscribe = (e: any) => {
-        if (!isTranscribing) {
-            setWords([]);
-            setIsTranscribing(true);
-            window.scribeApi.startTranscribe();
-        }
+        e.preventDefault();
+        invoke('start_listening').then(() => console.log('listening...'));
+        setIsTranscribing(true);
     }
 
     const stopTranscription = (e: any) => {
         if (isTranscribing) {
+            invoke('stop_listening');
             setIsTranscribing(false);
-            window.scribeApi.stopTranscribe();
         }
     }
      
     const translateText = async (text: string) => {
         setIsLoading(true);
         try {
-            const { data } = await axios.post<TranslationResponse>(TRANSLATION_URL, {
+            const response = await axios.post<TranslationResponse>(TRANSLATION_URL, {
                 text: text,
-                src_lang: "fr",
-                targ_lang: "en",
+                src_lang: "Spanish",
+                targ_lang: "English",
             });
-            setTranslation(data['translatedText']);
+            if (response.status == 200) {
+                setTranslation(response.data['translation']);
+            } else {
+                throw new Error("Failed to fetch translation");
+            }
         } catch (err) {
-            console.error("Error fetching translation: ", err);
+            console.error("Error: ", err);
         }
         setIsLoading(false);
     }
 
     const translateSelected = (e: any) => {
         e.preventDefault();
-        if (selectedTextRef.current.length) {
+        if (selectedTextRef.current?.length) {
             translateText(selectedTextRef.current);
         }
     }
 
+
     return (
         <div className='container'>
             <div className='controls'>
+                <Dropdown language={sourceLang} changeLanguage={setSourceLang} />
+                <Dropdown language={targetLang} changeLanguage={setTargetLang} />
                 { isTranscribing ? 
                     <Button onClick={stopTranscription}>Stop</Button> :
                     <Button onClick={startTranscribe}>Transcribe</Button>

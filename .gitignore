@@ -93,3 +93,9 @@ out/
 
 # transcription binary
 scribe/scribe
+
+# VS Code
+.vscode
+
+# Distribution files
+dist/

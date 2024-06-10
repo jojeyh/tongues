@@ -137,6 +137,7 @@ void context_state_callback(pa_context *c, void *userdata) {
 }
 
 int main(int argc, char *argv[]) {
+    // Websocket url of transcription service
     const char *ws_url = std::getenv("TONGUES_WS_URL");
 
     if (ws_url == nullptr) {
