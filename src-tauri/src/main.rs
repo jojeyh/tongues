@@ -3,21 +3,9 @@
 
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
-use std::{thread, time::Duration};
 use std::{io::{BufReader, Read}, process::{Command, Stdio}};
 
 use tauri::{Manager, State};
-
-#[derive(Clone, serde::Serialize)]
-struct Payload {
-  message: String,
-}
-
-// Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-// #[tauri::command]
-// fn greet(name: &str) -> String {
-//     format!("Hello, {}! You've been greeted from Rust!", name)
-// }
 
 /*
     This function spawns a new thread to continuously run a small C++ binary that has

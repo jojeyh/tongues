@@ -6,6 +6,7 @@ import ArrowCircleRightIcon from '@mui/icons-material/ArrowCircleRight';
 import { listen } from '@tauri-apps/api/event';
 import { invoke } from '@tauri-apps/api/tauri';
 import Dropdown from './Dropdown';
+import { ArrowRight } from '@mui/icons-material';
 
 interface TranslationResponse {
     translation: string;
@@ -111,8 +112,9 @@ const App = () => {
     return (
         <div className='container'>
             <div className='controls'>
-                <Dropdown language={sourceLang} setLanguage={setSourceLang} />
-                <Dropdown language={targetLang} setLanguage={setTargetLang} />
+                <Dropdown label="source" language={sourceLang} setLanguage={setSourceLang} />
+                <ArrowRight />
+                <Dropdown label="target" language={targetLang} setLanguage={setTargetLang} />
                 <div style={{marginLeft: 'auto'}}>
                     { isTranscribing ? 
                         <Button onClick={stopTranscription}>Stop</Button> :

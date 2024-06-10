@@ -1,6 +1,6 @@
 .container {
     display: grid;
-    grid-template-rows: 50px 1fr;
+    grid-template-rows: 70px 1fr;
     grid-template-columns: 1.2fr 60px 1fr;
     grid-template-areas:
         "controls controls controls"
@@ -26,8 +26,9 @@
     border: 1px solid black;
     border-radius: 10px;
     margin-right: 10px;
-    height: calc(100vh - 80px);
-}
+    /* this height forces height of right column also */
+    height: calc(100vh - 90px); 
+} 
 
 .right {
     padding: 20px;
