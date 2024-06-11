@@ -101,20 +101,20 @@ const App = () => {
             } else {
                 throw new Error("Failed to fetch translation");
             }
-            // const speechResponse = await axios.post(API_URL + 'speech', {
-            //     text: text, 
-            //     language: sourceLang,
-            // });
-            // if (speechResponse.status == 200) {
-            //     const audioBlob = new Blob([speechResponse.data], { type: 'audio/mpeg' });
-            //     const audioUrl = URL.createObjectURL(audioBlob);
-            //     const audio = new Audio(audioUrl);
-            //     await audio.play();
-            // } else {
-            //     console.log("Failed to fetch speech");
-            // }
-
-            endRef.current?.scrollIntoView();
+            const speechResponse = await axios.post(API_URL + 'speech', {
+                text: text, 
+                language: sourceLang,
+            }, {
+                responseType: 'arraybuffer',
+            });
+            if (speechResponse.status == 200) {
+                const audioBlob = new Blob([speechResponse.data], { type: 'audio/mpeg' });
+                const audioUrl = URL.createObjectURL(audioBlob);
+                const audio = new Audio(audioUrl);
+                await audio.play();
+            } else {
+                console.log("Failed to fetch speech");
+            }
         } catch (err) {
             console.error("Error: ", err);
         }
