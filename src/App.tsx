@@ -22,6 +22,7 @@ const App = () => {
     const [isTranscribing, setIsTranscribing] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const selectedTextRef = useRef<string | null>(null);
+    const endRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const unlisten = listen('transcription', (event: any) => {
@@ -35,6 +36,10 @@ const App = () => {
             unlisten.then((f) => f());
         };
     }, []);
+
+    useEffect(() => {
+        endRef.current?.scrollIntoView();
+    }, [words]);
 
     const handleKeyDown = (event: any) => {
         if (event.ctrlKey && event.key === 'z') {
@@ -108,6 +113,8 @@ const App = () => {
             // } else {
             //     console.log("Failed to fetch speech");
             // }
+
+            endRef.current?.scrollIntoView();
         } catch (err) {
             console.error("Error: ", err);
         }
@@ -144,6 +151,7 @@ const App = () => {
                         onClick={() => translateText(word)}
                     >{word}</div>
                 ))}
+                <div ref={endRef}></div>
             </div>
             <div className='center'>
                 <IconButton onClick={translateSelected}>

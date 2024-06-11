@@ -44,6 +44,7 @@ async fn listen(app_handle: tauri::AppHandle, stop_flag: Arc<AtomicBool>) {
         }
     }
 
+    println!("Kill listener child process.");
     child.kill().expect("Failed to kill child process.");
 }
 
