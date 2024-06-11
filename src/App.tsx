@@ -12,7 +12,7 @@ interface TranslationResponse {
     translation: string;
 }
 
-const TRANSLATION_URL = 'https://api.tongues.media/translate';
+const API_URL = 'https://api.tongues.media/';
 
 const App = () => {
     const [sourceLang, setSourceLang] = useState<string>("Spanish");
@@ -86,7 +86,7 @@ const App = () => {
     const translateText = async (text: string) => {
         setIsLoading(true);
         try {
-            const response = await axios.post<TranslationResponse>(TRANSLATION_URL, {
+            const response = await axios.post<TranslationResponse>(API_URL + 'translate', {
                 text: text,
                 src_lang: sourceLang,
                 targ_lang: targetLang,
@@ -96,7 +96,18 @@ const App = () => {
             } else {
                 throw new Error("Failed to fetch translation");
             }
-            
+            // const speechResponse = await axios.post(API_URL + 'speech', {
+            //     text: text, 
+            //     language: sourceLang,
+            // });
+            // if (speechResponse.status == 200) {
+            //     const audioBlob = new Blob([speechResponse.data], { type: 'audio/mpeg' });
+            //     const audioUrl = URL.createObjectURL(audioBlob);
+            //     const audio = new Audio(audioUrl);
+            //     await audio.play();
+            // } else {
+            //     console.log("Failed to fetch speech");
+            // }
         } catch (err) {
             console.error("Error: ", err);
         }

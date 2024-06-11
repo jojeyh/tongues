@@ -1,3 +1,7 @@
+html {
+    overflow-y: hidden;
+}
+
 .container {
     display: grid;
     grid-template-rows: 70px 1fr;
@@ -7,6 +11,7 @@
         "left center right";
     padding: 5px;
     box-sizing: border-box;
+    height: 100vh;
 }
 
 .header {
@@ -26,16 +31,18 @@
     border: 1px solid black;
     border-radius: 10px;
     margin-right: 10px;
-    /* this height forces height of right column also */
     height: calc(100vh - 90px); 
+    overflow-y: scroll;
 } 
 
 .right {
+    height: calc(100vh - 90px); 
     padding: 20px;
     box-sizing: border-box;
     grid-area: right;
     border: 1px solid black;
     border-radius: 10px;
+    overflow-y: scroll;
 }
 
 .center {
