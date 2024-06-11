@@ -6,7 +6,7 @@ import ArrowCircleRightIcon from '@mui/icons-material/ArrowCircleRight';
 import { listen } from '@tauri-apps/api/event';
 import { invoke } from '@tauri-apps/api/tauri';
 import Dropdown from './Dropdown';
-import { ArrowRight } from '@mui/icons-material';
+import { ArrowRight, Speaker, VolumeUp } from '@mui/icons-material';
 
 interface TranslationResponse {
     translation: string;
@@ -18,7 +18,7 @@ const App = () => {
     const [sourceLang, setSourceLang] = useState<string>("Spanish");
     const [targetLang, setTargetLang] = useState<string>("English");
     const [words, setWords] = useState<string[]>([]);
-    const [translation, setTranslation] = useState<string>("");
+    const [translation, setTranslation] = useState<string | null>(null);
     const [isTranscribing, setIsTranscribing] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const selectedTextRef = useRef<string | null>(null);
@@ -101,20 +101,7 @@ const App = () => {
             } else {
                 throw new Error("Failed to fetch translation");
             }
-            const speechResponse = await axios.post(API_URL + 'speech', {
-                text: text, 
-                language: sourceLang,
-            }, {
-                responseType: 'arraybuffer',
-            });
-            if (speechResponse.status == 200) {
-                const audioBlob = new Blob([speechResponse.data], { type: 'audio/mpeg' });
-                const audioUrl = URL.createObjectURL(audioBlob);
-                const audio = new Audio(audioUrl);
-                await audio.play();
-            } else {
-                console.log("Failed to fetch speech");
-            }
+            
         } catch (err) {
             console.error("Error: ", err);
         }
@@ -129,6 +116,23 @@ const App = () => {
         }
     }
 
+    const playAudio = async (e: any) => {
+        e.preventDefault();
+        const speechResponse = await axios.post(API_URL + 'speech', {
+            text: selectedTextRef.current, 
+            language: sourceLang,
+        }, {
+            responseType: 'arraybuffer',
+        });
+        if (speechResponse.status == 200) {
+            const audioBlob = new Blob([speechResponse.data], { type: 'audio/mpeg' });
+            const audioUrl = URL.createObjectURL(audioBlob);
+            const audio = new Audio(audioUrl);
+            await audio.play();
+        } else {
+            console.log("Failed to fetch speech");
+        }
+    }
 
     return (
         <div className='container'>
@@ -159,19 +163,18 @@ const App = () => {
                 </IconButton>
             </div>
             <div className='right'>
-                <div className='translation'>
-                    { isLoading ? 
-                        <CircularProgress size='large' /> :
-                        <div className='translation'>
-                            <div style={{paddingBottom: '20px'}}>
-                                {selectedTextRef.current}
-                            </div>
-                            <div>
-                                {translation}
-                            </div>
+                { isLoading ? 
+                    <CircularProgress size='large' /> :
+                    <div className='translation'>
+                        <div style={{paddingBottom: '20px'}}>
+                            {selectedTextRef.current}
                         </div>
-                    }
-                </div>
+                        <Button onClick={playAudio}>Play</Button>
+                        <div>
+                            {translation}
+                        </div>
+                    </div>
+                }
             </div>
         </div>
     )
