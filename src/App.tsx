@@ -76,6 +76,7 @@ const App = () => {
     }
 
     const stopTranscription = (e: any) => {
+        e.preventDefault();
         if (isTranscribing) {
             invoke('stop_listening');
             setIsTranscribing(false);
@@ -87,17 +88,19 @@ const App = () => {
         try {
             const response = await axios.post<TranslationResponse>(TRANSLATION_URL, {
                 text: text,
-                src_lang: "Spanish",
-                targ_lang: "English",
+                src_lang: sourceLang,
+                targ_lang: targetLang,
             });
             if (response.status == 200) {
                 setTranslation(response.data['translation']);
             } else {
                 throw new Error("Failed to fetch translation");
             }
+            
         } catch (err) {
             console.error("Error: ", err);
         }
+        selectedTextRef.current = text;
         setIsLoading(false);
     }
 
